@@ -32,6 +32,12 @@ const INTERVAL_MS_MAP = {
   day: 24 * 60 * 60 * 1000,
 };
 
+const toUtcWithoutShift = localDateTimeStr => {
+  const parts = localDateTimeStr.split(/[-T:]/).map(Number);
+  const localDate = new Date(parts[0], parts[1] - 1, parts[2], parts[3], parts[4]);
+  return new Date(localDate.getTime() - 8 * 3600_000).toISOString();
+};
+
 const DashboardPage = ({ hasSetup }) => {
   const [summaryLevel, setSummaryLevel] = useState("farmSummaryMode");
   const [farms, setFarms] = useState([]);
@@ -303,8 +309,8 @@ const DashboardPage = ({ hasSetup }) => {
         else url.searchParams.set("zoneObjectId", id);
         url.searchParams.set("dataType", selectedDataType);
         url.searchParams.set("interval", effectiveInterval);
-        url.searchParams.set("startTime", new Date(startTime).toISOString());
-        url.searchParams.set("endTime", new Date(endTime).toISOString());
+        url.searchParams.set("startTime", toUtcWithoutShift(startTime));
+        url.searchParams.set("endTime", toUtcWithoutShift(endTime));
 
         const res = await fetch(url.toString(), { headers });
         if (res.status === 401) {
