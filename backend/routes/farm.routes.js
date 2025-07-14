@@ -18,9 +18,10 @@ router.patch("/:id", authMiddleware, farmController.updateFarm);
 // DELETE: Delete a farm by _id
 router.delete("/:id", authMiddleware, farmController.deleteFarm);
 
-// POST: Join farm via farmName and accessCode
+// POST: Join a farm via farmName and accessCode
 router.post("/join", authMiddleware, farmController.joinFarm);
 
+// GET: To check whether a user has any farm (hasSetup)
 router.get("/has-setup", authMiddleware, farmController.hasAnyFarm);
 
 module.exports = router;

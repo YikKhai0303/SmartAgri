@@ -5,7 +5,7 @@ const Farm = require("../models/Farm");
 const Zone = require("../models/Zone");
 const Sensor = require("../models/Sensor");
 const SensorReading = require("../models/SensorReading");
-const User = require("../models/User"); // Adjust path as needed
+const User = require("../models/User");
 const generateId = require("../utils/idGenerator")
 
 // POST: Create a new farm
@@ -22,7 +22,7 @@ exports.createFarm = async (req, res) => {
       farmName,
       location,
       accessCode,
-      members: [{ user: req.user._id, role: 'admin' }],
+      members: [{ user: req.user._id, role: 'admin' }]
     });
 
     await farm.save();
@@ -46,6 +46,7 @@ exports.getAllFarms = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
 // PATCH: Update farm details by _id
 exports.updateFarm = async (req, res) => {
   try {
@@ -64,19 +65,14 @@ exports.updateFarm = async (req, res) => {
       if (existingFarmName) return res.status(400).json({ error: "Farm name already exists." });
     }
 
-    // Step 1: Extract email list
     const emails = members.map(m => m.email.toLowerCase().trim());
     const users = await User.find({ email: { $in: emails } });
-
-    // Step 2: Map emails to user IDs
     const emailToIdMap = Object.fromEntries(users.map(u => [u.email, u._id]));
 
-    // Step 3: Construct updated members array
     const updatedMembers = [];
     for (const m of members) {
       const userId = emailToIdMap[m.email.toLowerCase().trim()];
       if (!userId) continue;
-
       updatedMembers.push({ user: userId, role: m.role === 'admin' ? 'admin' : 'member' });
     }
 
@@ -104,55 +100,33 @@ exports.updateFarm = async (req, res) => {
 };
 
 // DELETE: Delete a farm by _id
-// exports.deleteFarm = async (req, res) => {
-//   try {
-//     const farm = await Farm.findById(req.params.id);
-//     if (!farm) return res.status(404).json({ error: "Farm not found." });
-
-//     const isAdmin = farm.members.some(
-//       m => m.user.equals(req.user._id) && m.role === 'admin'
-//     );
-//     if (!isAdmin) return res.status(403).json({ error: "Only admins can delete a farm." });
-
-//     await farm.deleteOne();
-//     res.json({ message: "Farm deleted successfully." });
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// };
-
 exports.deleteFarm = async (req, res) => {
   try {
     const farm = await Farm.findById(req.params.id);
     if (!farm) return res.status(404).json({ error: "Farm not found." });
 
-    // ✅ Admin check: normalized members array
     const isAdmin = farm.members.some(
       m => m.user.equals(req.user._id) && m.role === 'admin'
     );
     if (!isAdmin) return res.status(403).json({ error: "Only admins can delete a farm." });
 
-    // Get zones under the farm
     const zones = await Zone.find({ farmObjectId: farm._id });
     const zoneIds = zones.map(z => z._id);
-
-    // Get sensors under those zones
     const sensors = await Sensor.find({ zoneObjectId: { $in: zoneIds } });
     const sensorIds = sensors.map(s => s._id);
 
-    // Delete sensor readings, sensors, zones, and the farm
     await SensorReading.deleteMany({ sensorObjectId: { $in: sensorIds } });
     await Sensor.deleteMany({ _id: { $in: sensorIds } });
     await Zone.deleteMany({ _id: { $in: zoneIds } });
     await farm.deleteOne();
 
-    res.json({ message: "✅ Farm and all related zones, sensors, and readings deleted." });
+    res.json({ message: "Farm and all related zones, sensors, and readings deleted." });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-// POST: Join Farm
+// POST: Join a farm via farmName and accessCode
 exports.joinFarm = async (req, res) => {
   try {
     const { farmName, accessCode } = req.body;
@@ -175,8 +149,7 @@ exports.joinFarm = async (req, res) => {
   }
 };
 
-
-// GET: Check if user has any farms
+// GET: To check whether a user has any farm (hasSetup)
 exports.hasAnyFarm = async (req, res) => {
   try {
     const farms = await Farm.find({ "members.user": req.user._id }).select("_id");

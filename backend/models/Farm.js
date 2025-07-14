@@ -3,6 +3,7 @@
 
 const mongoose = require("mongoose");
 
+// To store the role (member/admin) of each user in a farm
 const MemberSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   role: { type: String, enum: ['admin', 'member'], required: true }

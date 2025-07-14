@@ -11,9 +11,8 @@ const SensorReadingSchema = new mongoose.Schema({
   timestamp: { type: Date, default: Date.now }
 });
 
-// Index to speed up latest & history queries
+// Index to speed up latest data and historical data queries
 SensorReadingSchema.index({ sensorObjectId: 1, dataType: 1, timestamp: -1 });
 SensorReadingSchema.index({ sourceSensorObjectId: 1, dataType: 1, timestamp: -1 });
-
 
 module.exports = mongoose.model("SensorReading", SensorReadingSchema);

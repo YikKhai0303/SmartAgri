@@ -46,7 +46,7 @@ exports.updateUserProfile = async (req, res) => {
   }
 };
 
-// PATCH: Update current user password (old + new)
+// PATCH: Reset current user password
 exports.updateUserPassword = async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;
@@ -54,7 +54,6 @@ exports.updateUserPassword = async (req, res) => {
       return res.status(400).json({ error: "Both oldPassword and newPassword are required." });
     }
 
-    // grab the hash so we can compare
     const user = await User.findById(req.user._id).select("+password");
     if (!user) return res.status(404).json({ error: "User not found." });
 
@@ -81,8 +80,7 @@ exports.deleteUserAccount = async (req, res) => {
   }
 };
 
-
-
+// GET: To check email validity (for adding a new user (member) into a farm operation)
 exports.getUserByEmail = async (req, res) => {
   try {
     const user = await User.findOne({ email: req.params.email.trim().toLowerCase() });

@@ -74,7 +74,6 @@ exports.updateZone = async (req, res) => {
       }
     }
 
-
     const updatedZone = await Zone.findByIdAndUpdate(
       req.params.id,
       { ...(zoneName && { zoneName }), ...updates },
@@ -88,35 +87,16 @@ exports.updateZone = async (req, res) => {
 };
 
 // DELETE: Delete a zone by _id
-// exports.deleteZone = async (req, res) => {
-//   try {
-//     const zone = await Zone.findById(req.params.id).populate("farmObjectId");
-//     if (!zone) return res.status(404).json({ error: "Zone not found." });
-
-//     const isAdmin = zone.farmObjectId.members.some(
-//       m => m.user.equals(req.user._id) && m.role === 'admin'
-//     );
-//     if (!isAdmin) return res.status(403).json({ error: "Only admins can delete a zone." });
-
-//     await zone.deleteOne();
-//     res.json({ message: "Zone deleted successfully." });
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// };
-
 exports.deleteZone = async (req, res) => {
   try {
     const zone = await Zone.findById(req.params.id).populate("farmObjectId");
     if (!zone) return res.status(404).json({ error: "Zone not found." });
 
-    // ✅ Admin check using new members format
     const isAdmin = zone.farmObjectId.members.some(
       m => m.user.equals(req.user._id) && m.role === 'admin'
     );
     if (!isAdmin) return res.status(403).json({ error: "Only admins can delete a zone." });
 
-    // Get sensors under the zone
     const sensors = await Sensor.find({ zoneObjectId: zone._id });
     const sensorIds = sensors.map(s => s._id);
 
@@ -124,7 +104,7 @@ exports.deleteZone = async (req, res) => {
     await Sensor.deleteMany({ _id: { $in: sensorIds } });
     await zone.deleteOne();
 
-    res.json({ message: "✅ Zone and all related sensors and readings deleted." });
+    res.json({ message: "Zone and all related sensors and readings deleted." });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

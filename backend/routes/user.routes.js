@@ -11,14 +11,14 @@ router.get("/me", authMiddleware, userController.getUserProfile);
 
 // PATCH: Update current user profile
 router.patch("/me", authMiddleware, userController.updateUserProfile);
+
+// PATCH: Reset current user password
 router.patch("/me/password", authMiddleware, userController.updateUserPassword);
 
 // DELETE: Delete current user account
 router.delete("/me", authMiddleware, userController.deleteUserAccount);
 
-
-
-
+// GET: To check email validity (for adding a new user (member) into a farm operation)
 router.get("/email/:email", authMiddleware, userController.getUserByEmail);
 
 module.exports = router;

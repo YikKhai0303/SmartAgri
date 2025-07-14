@@ -39,7 +39,7 @@ exports.addSensor = async (req, res) => {
   }
 };
 
-// GET: Get sensors (optionally filter by sensorId, sensorName, dataType, isActive, farmObjectId, zoneObjectId)
+// GET: Get sensors (optionally filter by sensorName, dataType, farmObjectId, zoneObjectId)
 exports.getSensors = async (req, res) => {
   try {
     const filter = {};
@@ -50,15 +50,18 @@ exports.getSensors = async (req, res) => {
     if (req.query.sensorName) {
       filter.sensorName = { $regex: req.query.sensorName.trim(), $options: "i" };
     }
+
     if (req.query.dataType) {
       const dataTypes = Array.isArray(req.query.dataType)
         ? req.query.dataType
         : [req.query.dataType];
       filter.dataTypes = { $in: dataTypes };
     }
+
     if (req.query.isActive !== undefined) {
       filter.isActive = req.query.isActive === "true";
     }
+
     if (req.query.farmId || req.query.farmName) {
       const farmFilter = {};
       if (req.query.farmId) farmFilter.farmId = { $regex: req.query.farmId.trim(), $options: "i" };
@@ -67,6 +70,7 @@ exports.getSensors = async (req, res) => {
       if (farms.length === 0) return res.json([]);
       filter.farmObjectId = { $in: farms.map(f => f._id) };
     }
+
     if (req.query.zoneId || req.query.zoneName) {
       const zoneFilter = {};
       if (req.query.zoneId) zoneFilter.zoneId = { $regex: req.query.zoneId.trim(), $options: "i" };
@@ -119,26 +123,6 @@ exports.updateSensor = async (req, res) => {
 };
 
 // DELETE: Remove a sensor by _id
-// exports.deleteSensor = async (req, res) => {
-//   try {
-//     const sensor = await Sensor.findById(req.params.id)
-//       .populate("farmObjectId")
-//       .populate("zoneObjectId");
-//     if (!sensor) return res.status(404).json({ error: "Sensor not found." });
-//     if (!sensor.farmObjectId || !sensor.zoneObjectId) return res.status(400).json({ error: "Sensor is missing valid farm or zone reference." });
-
-//     const isAdmin = sensor.farmObjectId.members.some(
-//       m => m.user.equals(req.user._id) && m.role === "admin"
-//     );
-//     if (!isAdmin) return res.status(403).json({ error: "Only admins can delete a sensor." });
-
-//     await sensor.deleteOne();
-//     res.json({ message: "Sensor deleted successfully." });
-//   } catch (err) {
-//     res.status(500).json({ error: err.message });
-//   }
-// };
-
 exports.deleteSensor = async (req, res) => {
   try {
     const sensor = await Sensor.findById(req.params.id)
@@ -147,7 +131,6 @@ exports.deleteSensor = async (req, res) => {
 
     if (!sensor) return res.status(404).json({ error: "Sensor not found." });
 
-    // ✅ Admin check using farm.members
     const isAdmin = sensor.farmObjectId.members.some(
       m => m.user.equals(req.user._id) && m.role === 'admin'
     );
@@ -156,15 +139,13 @@ exports.deleteSensor = async (req, res) => {
     await SensorReading.deleteMany({ sensorObjectId: sensor._id });
     await sensor.deleteOne();
 
-    res.json({ message: "✅ Sensor and its readings deleted successfully." });
+    res.json({ message: "Sensor and its readings deleted successfully." });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-
-
-// GET: Get all active sensors (for sensor simulator) (no auth)
+// GET: Get all active sensors (no auth) (for sensor simulator related developer use)
 exports.getSensorsForSimulator = async (req, res) => {
   try {
     const sensors = await Sensor.find({ isActive: true }).select("_id sensorId sensorName dataTypes");
