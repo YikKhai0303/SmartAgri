@@ -17,7 +17,7 @@ const formatToMYTString = (utcDate) => {
   const day = String(localDate.getDate()).padStart(2, '0');
   const month = String(localDate.getMonth() + 1).padStart(2, '0');
   const year = localDate.getFullYear();
-  const time = localDate.toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+  const time = localDate.toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
   return `${day}/${month}/${year} ${time}`;
 };
 
