@@ -194,7 +194,15 @@ const MonitorPage = ({ hasSetup }) => {
       !latest || new Date(r.timestamp) > new Date(latest.timestamp) ? r : latest, null
     );
 
-    return { avg, lastUpdate: latest ? new Date(latest.timestamp).toLocaleString() : 'N/A' };
+    return {
+      avg,
+      lastUpdate: latest
+        ? new Date(latest.timestamp).toLocaleString("en-MY", {
+            timeZone: "Asia/Kuala_Lumpur", year: "numeric", month: "2-digit", day: "2-digit",
+            hour: "2-digit", minute: "2-digit", second: "2-digit"
+          })
+        : "N/A"
+    };
   };
 
   const getFarmStats = (farm) => {
