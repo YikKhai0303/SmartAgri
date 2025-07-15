@@ -104,8 +104,9 @@ exports.getLatestReadings = async (req, res) => {
       match.dataType = { $in: types };
     }
 
-    const oneHourAgo = new Date(Date.now() - 1000 * 60 * 60);
-    match.timestamp = { $gte: oneHourAgo };
+    const mytOffsetMs = 8 * 60 * 60 * 1000;
+    const oneHourAgoUTC = new Date(Date.now() - mytOffsetMs - (60 * 60 * 1000));
+    match.timestamp = { $gte: oneHourAgoUTC };
 
     const results = await SensorReading.aggregate([
       { $match: match },
