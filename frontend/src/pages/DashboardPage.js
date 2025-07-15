@@ -364,7 +364,7 @@ const DashboardPage = ({ hasSetup }) => {
       }
 
       smoothingSlider.on("start", () => {
-        const t = smoothingSlider.get("start");
+        const t = 1 - smoothingSlider.get("start");
         allSeries.forEach(s => s.set("tension", t));
       });
 
