@@ -33,7 +33,7 @@ async function _tick(farmId, dataType) {
   const sensors = await Sensor.find({ farmObjectId: farmId, isActive: true, dataTypes: dataType });
   if (!sensors.length) return;
   const limit = pLimit(CONCURRENCY);
-  const now = new Date();
+  const now = new Date(Date.now() - 8 * 60 * 60 * 1000);
   await Promise.all(sensors.map(s =>
     limit(() =>
       SensorReading.create({
