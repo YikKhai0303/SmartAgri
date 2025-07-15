@@ -194,15 +194,7 @@ const MonitorPage = ({ hasSetup }) => {
       !latest || new Date(r.timestamp) > new Date(latest.timestamp) ? r : latest, null
     );
 
-    return {
-      avg,
-      lastUpdate: latest
-        ? new Date(latest.timestamp).toLocaleString("en-MY", {
-            timeZone: "Asia/Kuala_Lumpur", year: "numeric", month: "2-digit", day: "2-digit",
-            hour: "2-digit", minute: "2-digit", second: "2-digit"
-          })
-        : "N/A"
-    };
+    return { avg, lastUpdate: latest ? new Date(new Date(latest.timestamp).getTime() + 8 * 60 * 60 * 1000).toLocaleString() : "N/A" };
   };
 
   const getFarmStats = (farm) => {
@@ -354,7 +346,7 @@ const MonitorPage = ({ hasSetup }) => {
                                             .filter(Boolean);
                                           if (!timestamps.length) return 'N/A';
                                           const latest = new Date(Math.max(...timestamps));
-                                          return latest.toLocaleString();
+                                          return new Date(latest.getTime() + 8 * 60 * 60 * 1000).toLocaleString();
                                         })()}
                                       </div>
                                     </div>
