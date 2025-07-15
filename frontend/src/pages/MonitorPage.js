@@ -12,6 +12,15 @@ const DATA_TYPES = [
   { key: 'windSpeed', label: 'Wind Speed', unit: 'm/s' }
 ];
 
+const formatToMYTString = (utcDate) => {
+  const localDate = new Date(utcDate.getTime() + 8 * 60 * 60 * 1000);
+  const day = String(localDate.getDate()).padStart(2, '0');
+  const month = String(localDate.getMonth() + 1).padStart(2, '0');
+  const year = localDate.getFullYear();
+  const time = localDate.toLocaleTimeString("en-US", { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+  return `${day}/${month}/${year} ${time}`;
+};
+
 const MonitorPage = ({ hasSetup }) => {
   const [latestReadings, setLatestReadings] = useState([]);
   const [farmAggregations, setFarmAggregations] = useState({});
@@ -194,7 +203,7 @@ const MonitorPage = ({ hasSetup }) => {
       !latest || new Date(r.timestamp) > new Date(latest.timestamp) ? r : latest, null
     );
 
-    return { avg, lastUpdate: latest ? new Date(new Date(latest.timestamp).getTime() + 8 * 60 * 60 * 1000).toLocaleString() : "N/A" };
+    return { avg, lastUpdate: latest ? formatToMYTString(new Date(latest.timestamp)) : "N/A" };
   };
 
   const getFarmStats = (farm) => {
@@ -346,7 +355,7 @@ const MonitorPage = ({ hasSetup }) => {
                                             .filter(Boolean);
                                           if (!timestamps.length) return 'N/A';
                                           const latest = new Date(Math.max(...timestamps));
-                                          return new Date(latest.getTime() + 8 * 60 * 60 * 1000).toLocaleString();
+                                          return formatToMYTString(latest);
                                         })()}
                                       </div>
                                     </div>
