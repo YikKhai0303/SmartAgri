@@ -1,24 +1,16 @@
-# SmartAgri – Capstone Project
+### SmartAgri Platform - Capstone Project
+Developed by Tan Yik Khai (21075064)
 
-## Demo Access Information
+### Link to the Deployed SmartAgri Platform
+You can access and interact with the live SmartAgri Platform via the link below.
+- SmartAgri Link: https://smartagriyk.onrender.com
 
-To help you explore the SmartAgri platform without setting up a new account, please use the following demo credentials:
+### To Explore the Dashboard Page (Historical Sensor Reading Data Monitoring)
+Users can join either of the following farm.
+These farms contain preloaded historical sensor reading data from 01/07/2025 to 31/07/2025.
 
-### Demo Account
-- **Email:** demo@mail.com  
-- **Password:** 1234
+- Farm Name: Demo Farm
+- Access Code: QWER
 
-### Preloaded Demo Farms
-The following farms come with 1 month of historical sensor data (01/07/2025 – 31/07/2025):
-
-1. **Demo Farm**  
-   **Access Code:** QWER
-
-2. **Sub Farm**  
-   **Access Code:** QWER
-
----
-
-## Live Deployment (via Render)
-- **Frontend:** [Insert your deployed frontend link here]
-- **Backend:** [Insert your deployed backend API link here]
+- Farm Name: Sub Farm
+- Access Code: QWER
