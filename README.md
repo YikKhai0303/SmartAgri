@@ -1,6 +1,6 @@
 ### SmartAgri Platform - Capstone Project
 Developed by Tan Yik Khai (21075064)
-
+---
 ### Link to the Deployed SmartAgri Platform
 You can access and interact with the live SmartAgri Platform via the link below.
 - SmartAgri Link: https://smartagriyk.onrender.com
